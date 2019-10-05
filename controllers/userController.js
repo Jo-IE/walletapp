@@ -2,7 +2,7 @@ var User = require('../models/user');
 const bcrypt = require('bcrypt');
 
 //save user info in db
-exports.user_create_post = [
+exports.user_register = [
     //validate and sanitize input
     check('*').isLength({ min: 1 }).withMessage('All fields must not be empty'),
     check('email').isEmail(),
@@ -25,20 +25,29 @@ exports.user_create_post = [
                 return res.json({ errors: errors });
             }
 
-            bcrypt.hash(req.body.password, 10).then(hash => {
-                const user = new User({
-                    name: req.body.name,
-                    email: req.body.email,
-                    hashed_pwd: hash,
-                    username: req.body.username
-                })
-                user.save();
-            }).then(() => {
-                res.send()
-            }).catch(err => {
-                console.log('error saving user: ' + err)
-                next()
-            })
+            User.findOne({ username: req.body.username }).then(user => {
+                if (user) {
+                    return res.status(400).json({ email: "Username already exists" });
+                } else {
+                    const newUser = new User({
+                        name: req.body.name,
+                        email: req.body.email,
+                        hashed_pwd: req.body.password,
+                        username: req.body.username
+                    });
+
+                    bcrypt.genSalt(10, (err, salt) => {
+                        bcrypt.hash(newUser.hashed_pwd, salt, (err, hash) => {
+                            if (err) throw err;
+                            newUser.hashed_pwd = hash;
+                            newUser
+                                .save()
+                                .then(user => res.json(user))
+                                .catch(err => console.log(err));
+                        });
+                    });
+                }
+            });
 
 
 
@@ -59,19 +68,51 @@ exports.user_login = [
     if (!errors.isEmpty()) {
         return res.json({ errors: errors });
     }
+    const username = req.body.email;
+    const password = req.body.password;
 
-    User.findOne({ username: req.body.username }, function (err, user) {
-        const match = bcrypt.compare(password, user.password);
-        if (match) {
-            //login
+    User.findOne({ username }).then(user => {
+        // Check if user exists
+        if (!user) {
+            return res.status(404).json({ emailnotfound: "Username not found" });
         }
-    })
+        // Check password
+        bcrypt.compare(password, user.hashed_pwd).then(match => {
+            if (match) {
 
-
-
-
-
+                // Create JWT Payload
+                const payload = {
+                    id: user.id,
+                    name: user.name
+                };
+                // Sign token
+                jwt.sign(
+                    payload,
+                    process.env.secretOrKey,
+                    {
+                        expiresIn: 31556926 // 1 year in seconds
+                    },
+                    (err, token) => {
+                        res.json({
+                            success: true,
+                            token: "Bearer " + token
+                        });
+                    }
+                );
+            } else {
+                return res
+                    .status(400)
+                    .json({ passwordincorrect: "Password incorrect" });
+            }
+        });
+    });
 }
+
+
+
+
+
+
 
 
 
