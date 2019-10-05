@@ -1,16 +1,9 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const { body } = require('express-validator');
+const { sanitizeBody } = require('express-validator');
 
-/* GET users listing. */
-router.get('/', function (req, res, next) {
-  //res.send('respond with a resource');
-  res.json([{
-    id: 1,
-    username: "samsepi0l"
-  }, {
-    id: 2,
-    username: "D0loresH4ze"
-  }]);
-});
+/* POST request for creating user. */
+router.post('/create', user_controller.user_create_post)
 
 module.exports = router;
