@@ -8,7 +8,7 @@ var TransactionSchema = new Schema({
     target_user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     timestamp_created: { type: Date, required: true },
     timestamp_processed: { type: Date, required: true },
-    state: {}
+    state: { type: String, enum: ['Processing', 'Processed'] }
 })
 
 
