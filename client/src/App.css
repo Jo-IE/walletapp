@@ -1,0 +1,44 @@
+:root {
+  --mainLavender: #d8b4e2;
+  --mainWhite: #fff;
+  --mainDark: #262730;
+  --mainCreme: #fde74c;
+  --mainRed: #ff5d73;
+}
+
+body {
+  font-family: "Manjari", sans-serif;
+  background: var(--mainWhite);
+  color: var(--mainDark);
+}
+
+.text-title {
+  text-transform: capitalize;
+  font-size: 5rem;
+}
+
+.text-subtitle {
+  text-transform: capitalize;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.text-red {
+  color: var(--mainRed);
+}
+
+.text-white {
+  color: var(--mainWhite);
+}
+
+.btn-dark {
+  background: var(--mainDark);
+  font-size: 0.8rem;
+  color: var(--mainWhite);
+  border: none;
+}
+.btn-dark:hover {
+  cursor: pointer;
+  color: var(--mainDark);
+  background: var(--mainRed);
+}
