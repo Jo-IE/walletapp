@@ -88,7 +88,7 @@ exports.user_login = [
     var errors = validationResult(req).array();
 
     if (!errors.isEmpty()) {
-        return res.json({ errors: errors });
+        return res.status(400).json({ errors: errors });
     }
     const username = req.body.email;
     const password = req.body.password;

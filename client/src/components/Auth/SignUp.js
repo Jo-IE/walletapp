@@ -11,10 +11,11 @@ class SignUp extends Component {
         this.state = {
             name: '',
             username: '',
-            password: '',
-            confirmpass: '',
             email: '',
-            errorMessage: []
+            errorMessage: [],
+            nameErrors: [],
+            emailErrors: [],
+            usernameErrors: []
         }
     }
     handleSubmit = (e) => {
@@ -29,6 +30,81 @@ class SignUp extends Component {
                 })
             })
     }
+
+    handleChange = (e) => {
+        e.preventDefault();
+        const { name, value } = e.target;
+        switch (name) {
+            case "name":
+                this.setState(() => {
+                    return {
+                        name: value
+                    }
+                })
+                break;
+            case "username":
+                this.setState(() => {
+                    return {
+                        username: value
+                    }
+                })
+                break;
+            case "email":
+                this.setState(() => {
+                    return {
+                        email: value
+                    }
+                })
+                break;
+            default:
+                break;
+        }
+    }
+
+    validateInput = (e) => {
+
+        const { name, value } = e.target;
+        const errors = [];
+        if (value.length < 0) {
+            errors.push('Name cannot be empty')
+        }
+        switch (name) {
+            case "name":
+
+                if (/[^a-zA-Z]/.test(value)) {
+                    errors.push('Name should contain only letters')
+                }
+
+                this.setState(() => {
+                    return {
+                        nameErrors: errors
+                    }
+                })
+                break;
+            case "username":
+                if (/[^a-zA-Z0-9]/.test(value)) {
+                    errors.push('Username should only contain alphanumeric characters')
+                }
+                this.setState(() => {
+                    return {
+                        usernameErrors: errors
+                    }
+                })
+                break;
+            case "email":
+                if (!/[@.]/.test(value)) {
+                    errors.push('Email is in an invalid format')
+                }
+                this.setState(() => {
+                    return {
+                        emailErrors: errors
+                    }
+                })
+                break;
+            default:
+                break;
+        }
+    }
     render() {
         return (
             <AppConsumer>
@@ -40,15 +116,20 @@ class SignUp extends Component {
                             <FormWrapper className="col-9 mx-auto col-md-6  my-3 my-5">
                                 <div className="card py-5 px-5 ">
                                     <div className="form-group">
-                                        <input type="text" name="name" className="form-control" placeholder="Name" />
+                                        <input type="text" name="name" className="form-control" placeholder="Name" onChange={this.handleChange} onBlur={this.validateInput} />
                                     </div>
+                                    <ul className="text-danger">{this.state.nameErrors.forEach(error => {
+                                        return (
+                                            <li key="error">{error}</li>
+                                        )
+                                    })}</ul>
 
 
                                     <div className="form-group">
-                                        <input type="text" name="username" className="form-control" placeholder="Username" />
+                                        <input type="text" name="username" className="form-control" placeholder="Username" onChange={this.handleChange} onBlur={this.validateInput} />
                                     </div>
                                     <div className="form-group">
-                                        <input type="email" name="email" className="form-control" placeholder="Email Adress" />
+                                        <input type="email" name="email" className="form-control" placeholder="Email Adress" onChange={this.handleChange} onBlur={this.validateInput} />
                                     </div>
                                     <div className="form-group">
                                         <input type="password" name="password" className="form-control" placeholder="Password" />
