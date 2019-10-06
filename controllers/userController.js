@@ -22,7 +22,7 @@ exports.user_register = [
             }) : errors;
 
             if (!errors.isEmpty()) {
-                return res.json({ errors: errors });
+                return res.status(400).json({ errors: errors });
             }
 
             User.findOne({ username: req.body.username }).then(user => {
@@ -56,7 +56,7 @@ exports.user_register = [
                                             expiresIn: 31556926 // 1 year in seconds
                                         },
                                         (err, token) => {
-                                            res.json({
+                                            res.status(201).json({
                                                 success: true,
                                                 token: "Bearer " + token,
                                                 user
