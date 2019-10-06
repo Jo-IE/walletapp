@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const FormWrapper = styled.div`
+export const FormWrapper = styled.form`
 .card {
   border-color: transparent;
   transition: all 1s linear;
