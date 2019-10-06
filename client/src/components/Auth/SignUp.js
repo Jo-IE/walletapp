@@ -1,15 +1,33 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
-import { FormWrapper } from './FormWrapper';
-import { Title } from './Title'
-import { AppConsumer } from '../context'
+import { FormWrapper } from '../FormWrapper';
+import { Title } from '../Title'
+import { AppConsumer } from '../../context'
 
 
 class SignUp extends Component {
-    handleSumbit = (e) => {
+    constructor() {
+        super()
+        this.state = {
+            name: '',
+            username: '',
+            password: '',
+            confirmpass: '',
+            email: '',
+            errorMessage: []
+        }
+    }
+    handleSubmit = (e) => {
         e.preventDefault();
         this.props.signup(this.state)
             .then(() => this.props.history.push('/dashboard'))
+            .catch(err => {
+                this.setState(() => {
+                    return {
+                        errorMessage: err.data
+                    }
+                })
+            })
     }
     render() {
         return (
@@ -39,6 +57,13 @@ class SignUp extends Component {
                                         <input type="password" name="confirmpass" className="form-control" placeholder="Confirm Password" />
                                     </div>
                                     <button type="submit">Sign Up</button>
+                                    <ul className="text-danger">
+                                        {this.state.errorMessage.forEach(message => {
+                                            return (
+                                                <li key="message">{message}</li>
+                                            )
+                                        })}
+                                    </ul>
                                     <p className="py-5">Already have an account? <Link to="/login">Log in!</Link></p>
                                 </div>
                             </FormWrapper>

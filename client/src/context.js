@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios'
 
 const AppContext = React.createContext()
 
@@ -6,7 +7,7 @@ const AppContext = React.createContext()
 class AppProvider extends Component {
     constructor() {
         super()
-        state = {
+        this.state = {
             user: JSON.parse(localStorage.getItem("user")) || {},
             token: JSON.parse(localStorage.getItem("token")) || ""
         }
@@ -50,7 +51,6 @@ class AppProvider extends Component {
         localStorage.removeItem("token");
         this.setState(() => {
             return {
-                todos: [],
                 user: {},
                 token: ""
             }

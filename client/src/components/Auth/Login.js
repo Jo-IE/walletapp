@@ -1,17 +1,35 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
-import { FormWrapper } from './FormWrapper';
-import { Title } from './Title';
-import { AppConsumer } from '../context'
+import { FormWrapper } from '../FormWrapper';
+import { Title } from '../Title';
+import { AppConsumer } from '../../context'
 
 
 class Login extends Component {
-    handleSumbit = (e) => {
+    constructor() {
+        super()
+        this.state = {
+
+            username: '',
+            password: '',
+
+            errorMessage: []
+        }
+    }
+    handleSubmit = (e) => {
         e.preventDefault();
         this.props.signup(this.state)
             .then(() => this.props.history.push('/dashboard'))
+            .catch(err => {
+                this.setState(() => {
+                    return {
+                        errorMessage: err.data
+                    }
+                })
+            })
     }
     render() {
+        console.log(this.props)
         return (
             <AppConsumer>
                 {value => {
@@ -29,6 +47,13 @@ class Login extends Component {
                                         <input type="password" name="password" className="form-control" placeholder="Password" />
                                     </div>
                                     <button type="submit">Log in</button>
+                                    <ul className="text-danger">
+                                        {this.state.errorMessage.forEach(message => {
+                                            return (
+                                                <li key="message">{message}</li>
+                                            )
+                                        })}
+                                    </ul>
                                     <p className="py-5">Don't have an account yet? <Link to="/signup">Sign Up!</Link></p>
                                 </div>
                             </FormWrapper>

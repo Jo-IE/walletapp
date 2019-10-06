@@ -44,6 +44,7 @@ exports.user_register = [
                                 .save()
                                 .then(user => {
                                     // Create JWT Payload
+                                    delete user.hashed_pwd;
                                     const payload = {
                                         id: user.id,
                                         name: user.name
@@ -100,6 +101,7 @@ exports.user_login = [
         // Check password
         bcrypt.compare(password, user.hashed_pwd).then(match => {
             if (match) {
+                delete user.hashed_pwd;
 
                 // Create JWT Payload
                 const payload = {
