@@ -6,7 +6,7 @@ var TransactionSchema = new Schema({
     curr_type: { type: String, enum: ['bitcoin', 'ethereum'], required: true },
     source_user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     target_user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    timestamp_created: { type: Date, required: true },
+    timestamp_created: { type: Date, required: true, default: Date.now() },
     timestamp_processed: { type: Date },
     state: { type: String, enum: ['Processing', 'Processed'], default: 'Processing' }
 })

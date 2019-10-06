@@ -9,6 +9,6 @@ router.post('/signup', user_controller.user_register)
 
 router.post('/login', user_controller.user_login)
 
-router.post('/addaccount', passport.authenticate('jwt', { session: false }), user_controller.add_currency)
+router.put('/addaccount', passport.authenticate('jwt', { session: false }), user_controller.add_currency)
 
 module.exports = router;

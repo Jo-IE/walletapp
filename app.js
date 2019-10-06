@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const passport = require("passport");
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const transactionsRouter = require('./routes/transactions')
 
 var app = express();
 //db connection
@@ -38,6 +39,7 @@ require("./config/passport")(passport);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/transaction', transactionsRouter)
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
