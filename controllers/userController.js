@@ -1,85 +1,86 @@
 var User = require('../models/user');
 const bcrypt = require('bcrypt');
+const { check, validationResult, body } = require('express-validator');
+const jwt = require("jsonwebtoken");
 
 //save user info in db
 exports.user_register = [
     //validate and sanitize input
     check('*').isLength({ min: 1 }).withMessage('All fields must not be empty'),
+    check('username').matches(/[a-zA-Z0-9]/).withMessage('Username must contain only alphanumeric characters'),
+    check('name').matches(/[a-zA-Z0-9]/).withMessage('Name must contain only alphanumeric characters'),
+    check('username').matches(/[@.]/).withMessage('Email should be in a valid format'),
     check('email').isEmail(),
-    body('name')
+    body('*')
         .not().isEmpty().trim().escape(),
-    body('username')
-        .not().isEmpty().trim().escape(),
-    body('password')
-        .not().isEmpty().trim().escape(),
-    body('confirmpass')
-        .not().isEmpty().trim().escape()], (req, res, next) => {
-            var errors = validationResult(req).array();
-            errors = req.body.password !== req.body.confirmpass ? errors.push({
-                "location": "body",
-                "msg": 'Passwords Must Match',
-                "param": "password"
-            }) : errors;
+], (req, res, next) => {
+    var errors = validationResult(req).array();
+    errors = req.body.password !== req.body.confirmpass ? errors.push({
+        "location": "body",
+        "msg": 'Passwords Must Match',
+        "param": "password"
+    }) : errors;
 
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors });
-            }
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors });
+    }
 
-            User.findOne({ username: req.body.username }).then(user => {
-                if (user) {
-                    return res.status(400).json({ email: "Username already exists" });
-                } else {
-                    const newUser = new User({
-                        name: req.body.name,
-                        email: req.body.email,
-                        hashed_pwd: req.body.password,
-                        username: req.body.username
-                    });
-
-                    bcrypt.genSalt(10, (err, salt) => {
-                        bcrypt.hash(newUser.hashed_pwd, salt, (err, hash) => {
-                            if (err) throw err;
-                            newUser.hashed_pwd = hash;
-                            newUser
-                                .save()
-                                .then(user => {
-                                    // Create JWT Payload
-                                    delete user.hashed_pwd;
-                                    const payload = {
-                                        id: user.id,
-                                        name: user.name
-                                    };
-                                    // Sign token
-                                    jwt.sign(
-                                        payload,
-                                        process.env.SECRET,
-                                        {
-                                            expiresIn: 31556926 // 1 year in seconds
-                                        },
-                                        (err, token) => {
-                                            res.status(201).json({
-                                                success: true,
-                                                token: "Bearer " + token,
-                                                user
-                                            });
-                                        }
-                                    )
-                                })
-                                .catch(err => console.log(err));
-                        });
-                    });
-                }
+    User.findOne({ username: req.body.username }).then(user => {
+        if (user) {
+            return res.status(400).json({ email: "Username already exists" });
+        } else {
+            const newUser = new User({
+                name: req.body.name,
+                email: req.body.email,
+                hashed_pwd: req.body.password,
+                username: req.body.username
             });
 
-
-
-
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(newUser.hashed_pwd, salt, (err, hash) => {
+                    if (err) throw err;
+                    newUser.hashed_pwd = hash;
+                    newUser
+                        .save()
+                        .then(user => {
+                            // Create JWT Payload
+                            delete user.hashed_pwd;
+                            const payload = {
+                                id: user.id,
+                                name: user.name
+                            };
+                            // Sign token
+                            jwt.sign(
+                                payload,
+                                process.env.SECRET,
+                                {
+                                    expiresIn: 31556926 // 1 year in seconds
+                                },
+                                (err, token) => {
+                                    res.status(201).json({
+                                        success: true,
+                                        token: "Bearer " + token,
+                                        user
+                                    });
+                                }
+                            )
+                        })
+                        .catch(err => console.log(err));
+                });
+            });
         }
+    });
+
+
+
+
+}
 
 
 exports.user_login = [
     //validate and sanitize input
     check('*').isLength({ min: 1 }).withMessage('All fields must not be empty'),
+    check('username').matches(/[a-zA-Z0-9]/).withMessage('Username must contain only alphanumeric characters'),
     body('username')
         .not().isEmpty().trim().escape(),
     body('password')
@@ -137,7 +138,7 @@ exports.user_login = [
 exports.add_currency = [
     //validate and sanitize input
     check('*').isLength({ min: 1 }).withMessage('All fields must not be empty'),
-    check('walletid').isNumber(),
+    check(['walletid', 'accountname']).matches(/\d/).withMessage('Wallet ID must be a number'),
     body('accountname')
         .not().isEmpty().trim().escape(),
     body('walletid')

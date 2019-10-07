@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const user_controller = require('../controllers/userController');
-const passport = require('../config/passport')
+const passport = require('passport')
 
 /* POST request for creating user. */
 router.post('/signup', user_controller.user_register)
@@ -9,6 +9,6 @@ router.post('/signup', user_controller.user_register)
 
 router.post('/login', user_controller.user_login)
 
-router.put('/addaccount', passport.authenticate('jwt', { session: false }), user_controller.add_currency)
+router.put('/addaccount', user_controller.add_currency)
 
 module.exports = router;

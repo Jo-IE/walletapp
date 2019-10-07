@@ -2,16 +2,19 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import { FormWrapper } from '../FormWrapper';
 import { Title } from '../Title'
-import { AppConsumer } from '../../context'
+import { withContext } from '../../context'
 
 
 class SignUp extends Component {
+
     constructor() {
         super()
         this.state = {
             name: '',
             username: '',
             email: '',
+            password: '',
+            confirmpass: '',
             errorMessage: [],
             nameErrors: [],
             emailErrors: [],
@@ -20,9 +23,11 @@ class SignUp extends Component {
     }
     handleSubmit = (e) => {
         e.preventDefault();
-        this.props.signup(this.state)
+        const { name, username, email, password, confirmpass } = this.state;
+        this.props.signup(name, username, email, password, confirmpass)
             .then(() => this.props.history.push('/dashboard'))
             .catch(err => {
+                console.log(err)
                 this.setState(() => {
                     return {
                         errorMessage: err.data
@@ -108,66 +113,63 @@ class SignUp extends Component {
     render() {
         console.log(this.state.name)
         console.log(this.state.nameErrors)
+        console.log(this.state.errorMessage)
+        console.log(this.props)
         return (
-            <AppConsumer>
-                {value => {
-                    return (
 
-                        <React.Fragment>
-                            <Title className="my-5 text-center">Sign up</Title>
-                            <FormWrapper className="col-9 mx-auto col-md-6  my-3 my-5">
-                                <div className="card py-5 px-5 ">
-                                    <div className="form-group">
-                                        <input type="text" name="name" className="form-control" placeholder="Name" onChange={this.handleChange} onBlur={this.validateInput} />
+            <React.Fragment>
+                <Title className="my-5 text-center">Sign up</Title>
+                <FormWrapper className="col-9 mx-auto col-md-6  my-3 my-5">
+                    <div className="card py-5 px-5 ">
+                        <div className="form-group">
+                            <input type="text" name="name" className="form-control" placeholder="Name" onChange={this.handleChange} onBlur={this.validateInput} />
 
-                                        <ul className="text-danger">{this.state.nameErrors.map(error => {
-                                            return (
-                                                <li key="error">{error}</li>
-                                            )
-                                        })}</ul>
-                                    </div>
+                            <ul className="text-danger">{this.state.nameErrors.map(error => {
+                                return (
+                                    <li key="error">{error}</li>
+                                )
+                            })}</ul>
+                        </div>
 
-                                    <div className="form-group">
-                                        <input type="text" name="username" className="form-control" placeholder="Username" onChange={this.handleChange} onBlur={this.validateInput} />
+                        <div className="form-group">
+                            <input type="text" name="username" className="form-control" placeholder="Username" onChange={this.handleChange} onBlur={this.validateInput} />
 
-                                        <ul className="text-danger">{this.state.usernameErrors.map(error => {
-                                            return (
-                                                <li key="error">{error}</li>
-                                            )
-                                        })}</ul>
-                                    </div>
-                                    <div className="form-group">
-                                        <input type="email" name="email" className="form-control" placeholder="Email Adress" onChange={this.handleChange} onBlur={this.validateInput} />
+                            <ul className="text-danger">{this.state.usernameErrors.map(error => {
+                                return (
+                                    <li key="error">{error}</li>
+                                )
+                            })}</ul>
+                        </div>
+                        <div className="form-group">
+                            <input type="email" name="email" className="form-control" placeholder="Email Adress" onChange={this.handleChange} onBlur={this.validateInput} />
 
-                                        <ul className="text-danger">{this.state.emailErrors.map(error => {
-                                            return (
-                                                <li key="error">{error}</li>
-                                            )
-                                        })}</ul>
-                                    </div>
-                                    <div className="form-group">
-                                        <input type="password" name="password" className="form-control" placeholder="Password" />
-                                    </div>
-                                    <div className="form-group my-3">
-                                        <input type="password" name="confirmpass" className="form-control" placeholder="Confirm Password" />
-                                    </div>
-                                    <button className="mt-3" type="submit">Sign Up</button>
-                                    <ul className="text-danger">
-                                        {this.state.errorMessage.map(message => {
-                                            return (
-                                                <li key="message">{message}</li>
-                                            )
-                                        })}
-                                    </ul>
-                                    <p className="py-5">Already have an account? <Link to="/login">Log in!</Link></p>
-                                </div>
-                            </FormWrapper>
-                        </React.Fragment>
-                    )
-                }}
-            </AppConsumer>
+                            <ul className="text-danger">{this.state.emailErrors.map(error => {
+                                return (
+                                    <li key="error">{error}</li>
+                                )
+                            })}</ul>
+                        </div>
+                        <div className="form-group">
+                            <input type="password" name="password" className="form-control" placeholder="Password" />
+                        </div>
+                        <div className="form-group my-3">
+                            <input type="password" name="confirmpass" className="form-control" placeholder="Confirm Password" />
+                        </div>
+                        <button onClick={this.props.signup} className="mt-3" type="submit">Sign Up</button>
+                        <ul className="text-danger">
+                            {this.state.errorMessage.map(message => {
+                                return (
+                                    <li key="message">{message}</li>
+                                )
+                            })}
+                        </ul>
+                        <p className="py-5">Already have an account? <Link to="/login">Log in!</Link></p>
+                    </div>
+                </FormWrapper>
+            </React.Fragment>
+
         );
     }
 }
 
-export default SignUp;
+export default withContext(SignUp);

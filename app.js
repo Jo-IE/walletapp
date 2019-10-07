@@ -38,8 +38,8 @@ app.use(passport.initialize());
 require("./config/passport")(passport);
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/transaction', transactionsRouter)
+app.use('/api/users', usersRouter);
+app.use('/api/transaction', transactionsRouter)
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

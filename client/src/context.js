@@ -9,29 +9,30 @@ class AppProvider extends Component {
         super()
         this.state = {
             user: JSON.parse(localStorage.getItem("user")) || {},
-            token: JSON.parse(localStorage.getItem("token")) || ""
+            token: JSON.parse(localStorage.getItem("token")) || "",
+            response: []
         }
     }
 
     signup = (userInfo) => {
-        return axios.post('/users/signup', userInfo)
+        return axios.post('/api/users/signup', userInfo)
             .then(response => {
-                if (response.status === '201') {
-                    const { user, token } = response.data;
-                    localStorage.setItem("token", token);
-                    localStorage.setItem("user", JSON.stringify(user));
-                    this.setState(() => {
-                        return {
-                            user,
-                            token
-                        };
-                    });
-                }
+
+                const { user, token } = response.data;
+                localStorage.setItem("token", token);
+                localStorage.setItem("user", JSON.stringify(user));
+                this.setState(() => {
+                    return {
+                        user,
+                        token
+                    };
+                });
+
             })
     }
 
     login = (userInfo) => {
-        return axios.post('/users/login', userInfo)
+        return axios.post('/api/users/login', userInfo)
             .then(response => {
                 if (response.status === '201') {
                     const { user, token } = response.data;
@@ -69,6 +70,18 @@ class AppProvider extends Component {
     }
 }
 
+
+
 const AppConsumer = AppContext.Consumer
 
-export { AppProvider, AppConsumer };
+function withContext(Component) {
+    return function contextComponent(props) {
+        return (
+            <AppContext.Consumer>
+                {context => <Component {...props} context={context} />}
+            </AppContext.Consumer>
+        )
+    }
+}
+
+export { AppProvider, AppConsumer, withContext };

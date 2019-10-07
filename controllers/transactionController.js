@@ -1,16 +1,10 @@
 const Transaction = require('../models/transaction');
 const User = require('../models/user');
+const { check, validationResult, body } = require('express-validator');
+
 
 //submit transaction
-exports.create_transaction = [
-    //validate and sanitize input
-    check('*').isLength({ min: 1 }).withMessage('All fields must not be empty'),
-    check('amount').isNumber(),
-    body('account')
-        .not().isEmpty().trim().escape(),
-    body('benusername')
-        .not().isEmpty().trim().escape(),
-], (req, res, next) => {
+exports.create_transaction = function (req, res, next) {
     var errors = validationResult(req).array();
 
     if (!errors.isEmpty()) {
