@@ -11,9 +11,8 @@ class Login extends Component {
         this.state = {
 
             username: '',
-            password: '',
-
-            errorMessage: []
+            errorMessage: [],
+            usernameErrors: []
         }
     }
     handleSubmit = (e) => {
@@ -27,6 +26,46 @@ class Login extends Component {
                     }
                 })
             })
+    }
+
+    handleChange = (e) => {
+        e.preventDefault();
+        const { name, value } = e.target;
+        switch (name) {
+            case "username":
+                this.setState(() => {
+                    return {
+                        username: value
+                    }
+                })
+                break;
+            default:
+                break;
+        }
+    }
+
+    validateInput = (e) => {
+
+        const { name, value } = e.target;
+        const errors = [];
+        if (value.length < 0) {
+            errors.push('Field cannot be empty')
+        }
+        switch (name) {
+
+            case "username":
+                if (/[^a-zA-Z0-9]/.test(value)) {
+                    errors.push('Username should only contain alphanumeric characters')
+                }
+                this.setState(() => {
+                    return {
+                        usernameErrors: errors
+                    }
+                })
+                break;
+            default:
+                break;
+        }
     }
     render() {
         console.log(this.props)
@@ -42,13 +81,18 @@ class Login extends Component {
                                 <div className="card py-5 px-5 ">
                                     <div className="form-group">
                                         <input type="text" name="username" className="form-control" placeholder="Username" />
+                                        <ul className="text-danger">{this.state.usernameErrors.map(error => {
+                                            return (
+                                                <li key="error">{error}</li>
+                                            )
+                                        })}</ul>
                                     </div>
                                     <div className="form-group">
                                         <input type="password" name="password" className="form-control" placeholder="Password" />
                                     </div>
                                     <button type="submit">Log in</button>
                                     <ul className="text-danger">
-                                        {this.state.errorMessage.forEach(message => {
+                                        {this.state.errorMessage.map(message => {
                                             return (
                                                 <li key="message">{message}</li>
                                             )

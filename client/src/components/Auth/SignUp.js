@@ -66,7 +66,7 @@ class SignUp extends Component {
         const { name, value } = e.target;
         const errors = [];
         if (value.length < 0) {
-            errors.push('Name cannot be empty')
+            errors.push('Field cannot be empty')
         }
         switch (name) {
             case "name":
@@ -106,6 +106,8 @@ class SignUp extends Component {
         }
     }
     render() {
+        console.log(this.state.name)
+        console.log(this.state.nameErrors)
         return (
             <AppConsumer>
                 {value => {
@@ -117,29 +119,41 @@ class SignUp extends Component {
                                 <div className="card py-5 px-5 ">
                                     <div className="form-group">
                                         <input type="text" name="name" className="form-control" placeholder="Name" onChange={this.handleChange} onBlur={this.validateInput} />
-                                    </div>
-                                    <ul className="text-danger">{this.state.nameErrors.forEach(error => {
-                                        return (
-                                            <li key="error">{error}</li>
-                                        )
-                                    })}</ul>
 
+                                        <ul className="text-danger">{this.state.nameErrors.map(error => {
+                                            return (
+                                                <li key="error">{error}</li>
+                                            )
+                                        })}</ul>
+                                    </div>
 
                                     <div className="form-group">
                                         <input type="text" name="username" className="form-control" placeholder="Username" onChange={this.handleChange} onBlur={this.validateInput} />
+
+                                        <ul className="text-danger">{this.state.usernameErrors.map(error => {
+                                            return (
+                                                <li key="error">{error}</li>
+                                            )
+                                        })}</ul>
                                     </div>
                                     <div className="form-group">
                                         <input type="email" name="email" className="form-control" placeholder="Email Adress" onChange={this.handleChange} onBlur={this.validateInput} />
+
+                                        <ul className="text-danger">{this.state.emailErrors.map(error => {
+                                            return (
+                                                <li key="error">{error}</li>
+                                            )
+                                        })}</ul>
                                     </div>
                                     <div className="form-group">
                                         <input type="password" name="password" className="form-control" placeholder="Password" />
                                     </div>
-                                    <div className="form-group">
+                                    <div className="form-group my-3">
                                         <input type="password" name="confirmpass" className="form-control" placeholder="Confirm Password" />
                                     </div>
-                                    <button type="submit">Sign Up</button>
+                                    <button className="mt-3" type="submit">Sign Up</button>
                                     <ul className="text-danger">
-                                        {this.state.errorMessage.forEach(message => {
+                                        {this.state.errorMessage.map(message => {
                                             return (
                                                 <li key="message">{message}</li>
                                             )
