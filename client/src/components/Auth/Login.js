@@ -54,7 +54,7 @@ class Login extends Component {
     }
 
     validateInput = (e) => {
-
+        e.preventDefault()
         const { name, value } = e.target;
         const errors = [];
         if (value.length < 0) {

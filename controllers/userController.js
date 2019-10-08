@@ -9,7 +9,7 @@ const validateLoginInput = require("../validation/login");
 exports.user_register = (req, res, next) => {
     const { errors, isValid } = validateSignupInput(req.body);
     // Check validation
-    if (isValid) {
+    if (!isValid) {
         return res.status(400).json({ errors: errors });
     }
 
@@ -32,7 +32,12 @@ exports.user_register = (req, res, next) => {
                         .save()
                         .then(user => {
                             // Create JWT Payload
-                            delete user.hashed_pwd;
+                            const tempUser = {
+                                id: user._id,
+                                name: user.name,
+                                email: user.email,
+                                username: user.username
+                            }
                             const payload = {
                                 id: user.id,
                                 name: user.name
@@ -45,10 +50,11 @@ exports.user_register = (req, res, next) => {
                                     expiresIn: 31556926 // 1 year in seconds
                                 },
                                 (err, token) => {
+                                    delete user.hashed_pwd;
                                     res.status(201).json({
                                         success: true,
                                         token: "Bearer " + token,
-                                        user
+                                        tempUser
                                     });
                                 }
                             )
@@ -82,7 +88,12 @@ exports.user_login = (req, res, next) => {
         // Check password
         bcrypt.compare(password, user.hashed_pwd).then(match => {
             if (match) {
-                delete user.hashed_pwd;
+                const tempUser = {
+                    id: match._id,
+                    name: match.name,
+                    email: match.email,
+                    username: match.username
+                }
 
                 // Create JWT Payload
                 const payload = {
@@ -101,7 +112,7 @@ exports.user_login = (req, res, next) => {
                         res.json({
                             success: true,
                             token: "Bearer " + token,
-                            user
+                            tempUser
                         });
                     }
                 );

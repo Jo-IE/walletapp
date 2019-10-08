@@ -19,7 +19,7 @@ class SignUp extends Component {
             emailErrors: [],
             usernameErrors: [],
             errorMessage: [],
-            data: {}
+
         }
     }
     handleSubmit = (e) => {
@@ -27,14 +27,14 @@ class SignUp extends Component {
         const { name, username, email, password, confirmpass } = this.state;
         const userdata = { name, username, email, password, confirmpass }
         console.log(userdata)
-        this.props.signup({ name, username, email, password, confirmpass })
+        this.props.context.signup(userdata)
             .then(() => this.props.history.push('/dashboard'))
             .catch(err => {
                 console.log(err)
                 this.setState(() => {
                     return {
-                        errorMessage: err.errors,
-                        data: userdata
+                        errorMessage: err.data,
+
                     }
                 })
             })
@@ -117,7 +117,6 @@ class SignUp extends Component {
     render() {
 
         console.log(this.state.nameErrors)
-        console.log(this.state.data)
         console.log(this.state.errorMessage)
         console.log(this.props)
 
@@ -125,7 +124,7 @@ class SignUp extends Component {
 
             <React.Fragment>
                 <Title className="my-5 text-center">Sign up</Title>
-                <FormWrapper onSubmit={this.props.signup} className="col-9 mx-auto col-md-6  my-3 my-5">
+                <FormWrapper className="col-9 mx-auto col-md-6  my-3 my-5">
                     <div className="card py-5 px-5 ">
                         <div className="form-group">
                             <input type="text" name="name" className="form-control" placeholder="Name" onChange={this.handleChange} onBlur={this.validateInput} />
@@ -161,7 +160,7 @@ class SignUp extends Component {
                         <div className="form-group my-3">
                             <input type="password" name="confirmpass" className="form-control" placeholder="Confirm Password" />
                         </div>
-                        <button className="mt-3" type="submit">Sign Up</button>
+                        <button onClick={this.handleSubmit} className="mt-3" type="submit">Sign Up</button>
                         <ul className="text-danger">{this.state.errorMessage.map(error => {
                             return (
                                 <li key="error">{error}</li>

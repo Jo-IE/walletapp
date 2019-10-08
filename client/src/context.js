@@ -3,6 +3,12 @@ import axios from 'axios'
 
 const AppContext = React.createContext()
 
+axios.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    config.headers.Authorization = `Bearer ${token}`;
+    return config;
+})
+
 
 class AppProvider extends Component {
     constructor() {
@@ -10,7 +16,7 @@ class AppProvider extends Component {
         this.state = {
             user: JSON.parse(localStorage.getItem("user")) || {},
             token: JSON.parse(localStorage.getItem("token")) || "",
-            response: []
+            errors: []
         }
     }
 
@@ -18,12 +24,13 @@ class AppProvider extends Component {
         return axios.post('http://localhost:5000/api/users/signup', userInfo)
             .then(response => {
                 console.log(response)
-                const { user, token } = response.data;
+
+                const { tempUser, token } = response.data;
                 localStorage.setItem("token", token);
-                localStorage.setItem("user", JSON.stringify(user));
+                localStorage.setItem("user", JSON.stringify(tempUser));
                 this.setState(() => {
                     return {
-                        user,
+                        user: tempUser,
                         token
                     };
                 });
@@ -35,12 +42,12 @@ class AppProvider extends Component {
         return axios.post('/api/users/login', userInfo)
             .then(response => {
                 if (response.status === '201') {
-                    const { user, token } = response.data;
+                    const { tempUser, token } = response.data;
                     localStorage.setItem("token", token);
-                    localStorage.setItem("user", JSON.stringify(user));
+                    localStorage.setItem("user", JSON.stringify(tempUser));
                     this.setState(() => {
                         return {
-                            user,
+                            user: tempUser,
                             token
                         };
                     });
