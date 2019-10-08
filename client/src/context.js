@@ -15,9 +15,9 @@ class AppProvider extends Component {
     }
 
     signup = (userInfo) => {
-        return axios.post('/api/users/signup', userInfo)
+        return axios.post('http://localhost:5000/api/users/signup', userInfo)
             .then(response => {
-
+                console.log(response)
                 const { user, token } = response.data;
                 localStorage.setItem("token", token);
                 localStorage.setItem("user", JSON.stringify(user));

@@ -2,32 +2,20 @@ var User = require('../models/user');
 const bcrypt = require('bcrypt');
 const { check, validationResult, body } = require('express-validator');
 const jwt = require("jsonwebtoken");
+const validateSignupInput = require("../validation/signup");
+const validateLoginInput = require("../validation/login");
 
 //save user info in db
-exports.user_register = [
-    //validate and sanitize input
-    check('*').isLength({ min: 1 }).withMessage('All fields must not be empty'),
-    check('username').matches(/[a-zA-Z0-9]/).withMessage('Username must contain only alphanumeric characters'),
-    check('name').matches(/[a-zA-Z0-9]/).withMessage('Name must contain only alphanumeric characters'),
-    check('username').matches(/[@.]/).withMessage('Email should be in a valid format'),
-    check('email').isEmail(),
-    body('*')
-        .not().isEmpty().trim().escape(),
-], (req, res, next) => {
-    var errors = validationResult(req).array();
-    errors = req.body.password !== req.body.confirmpass ? errors.push({
-        "location": "body",
-        "msg": 'Passwords Must Match',
-        "param": "password"
-    }) : errors;
-
-    if (!errors.isEmpty()) {
+exports.user_register = (req, res, next) => {
+    const { errors, isValid } = validateSignupInput(req.body);
+    // Check validation
+    if (isValid) {
         return res.status(400).json({ errors: errors });
     }
 
     User.findOne({ username: req.body.username }).then(user => {
         if (user) {
-            return res.status(400).json({ email: "Username already exists" });
+            return res.status(400).json({ errors: "Username already exists" });
         } else {
             const newUser = new User({
                 name: req.body.name,
@@ -69,7 +57,7 @@ exports.user_register = [
                 });
             });
         }
-    });
+    }).catch(err => console.log(err));
 
 
 
@@ -77,18 +65,10 @@ exports.user_register = [
 }
 
 
-exports.user_login = [
-    //validate and sanitize input
-    check('*').isLength({ min: 1 }).withMessage('All fields must not be empty'),
-    check('username').matches(/[a-zA-Z0-9]/).withMessage('Username must contain only alphanumeric characters'),
-    body('username')
-        .not().isEmpty().trim().escape(),
-    body('password')
-        .not().isEmpty().trim().escape(),
-], (req, res, next) => {
-    var errors = validationResult(req).array();
-
-    if (!errors.isEmpty()) {
+exports.user_login = (req, res, next) => {
+    const { errors, isValid } = validateLoginInput(req.body);
+    // Check validation
+    if (!isValid) {
         return res.status(400).json({ errors: errors });
     }
     const username = req.body.email;
@@ -97,7 +77,7 @@ exports.user_login = [
     User.findOne({ username }).then(user => {
         // Check if user exists
         if (!user) {
-            return res.status(404).json({ usernamenotfound: "Username not found" });
+            return res.status(404).json({ errors: "Username not found" });
         }
         // Check password
         bcrypt.compare(password, user.hashed_pwd).then(match => {
@@ -128,7 +108,7 @@ exports.user_login = [
             } else {
                 return res
                     .status(400)
-                    .json({ passwordincorrect: "Password incorrect" });
+                    .json({ errors: "Password incorrect" });
             }
         });
     });

@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const user_controller = require('../controllers/userController');
-const passport = require('passport')
 
 /* POST request for creating user. */
 router.post('/signup', user_controller.user_register)

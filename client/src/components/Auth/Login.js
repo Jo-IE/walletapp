@@ -11,8 +11,10 @@ class Login extends Component {
         this.state = {
 
             username: '',
+            password: '',
             errorMessage: [],
-            usernameErrors: []
+            usernameErrors: [],
+            passwordErrors: []
         }
     }
     handleSubmit = (e) => {
@@ -36,6 +38,13 @@ class Login extends Component {
                 this.setState(() => {
                     return {
                         username: value
+                    }
+                })
+                break;
+            case "password":
+                this.setState(() => {
+                    return {
+                        password: value
                     }
                 })
                 break;
@@ -63,6 +72,13 @@ class Login extends Component {
                     }
                 })
                 break;
+            case "password":
+                this.setState(() => {
+                    return {
+                        passwordErrors: errors
+                    }
+                })
+                break;
             default:
                 break;
         }
@@ -80,7 +96,7 @@ class Login extends Component {
                             <FormWrapper className="col-9 mx-auto col-md-6  my-3 my-5">
                                 <div className="card py-5 px-5 ">
                                     <div className="form-group">
-                                        <input type="text" name="username" className="form-control" placeholder="Username" />
+                                        <input type="text" name="username" className="form-control" placeholder="Username" onChange={this.handleChange} onBlur={this.validateInput} />
                                         <ul className="text-danger">{this.state.usernameErrors.map(error => {
                                             return (
                                                 <li key="error">{error}</li>
@@ -88,7 +104,12 @@ class Login extends Component {
                                         })}</ul>
                                     </div>
                                     <div className="form-group">
-                                        <input type="password" name="password" className="form-control" placeholder="Password" />
+                                        <input type="password" name="password" className="form-control" placeholder="Password" onChange={this.handleChange} onBlur={this.validateInput} />
+                                        <ul className="text-danger">{this.state.passwordErrors.map(error => {
+                                            return (
+                                                <li key="error">{error}</li>
+                                            )
+                                        })}</ul>
                                     </div>
                                     <button type="submit">Log in</button>
                                     <ul className="text-danger">
